@@ -83,7 +83,7 @@ jobs:
       if: steps.compile.outputs.status == 'success'
       with:
         name: ${{ matrix.chip.artifact }}
-        path: ${REPOSITORY}/bin
+        path: chaos_calmer/bin/*
 
     - name: Create GitHub release with artifacts
       uses: softprops/action-gh-release@v1
