@@ -65,8 +65,8 @@ jobs:
         echo "18ev200_sergek" > ${REPOSITORY}/target/linux/hi35xx/base-files/etc/soc-version
         ls -la chaos_calmer
         ls -la ${PWD}
-        wget https://raw.githubusercontent.com/SSharshunov/chaos_calmer/master/wrt_config_ser_01 -O ${REPOSITORY}/target/linux/hi35xx/examples/.config_18ev200_zftlab_rotek
-        wget https://raw.githubusercontent.com/SSharshunov/chaos_calmer/master/ker_config_ser_01 -O ${REPOSITORY}/target/linux/hi35xx/config-${{ matrix.chip.kernel }}
+        wget https://raw.githubusercontent.com/SSharshunov/chaos_calmer/f086093622497d48cd9d7635564927af183d82db/wrt_config_ser_01 -O ${REPOSITORY}/target/linux/hi35xx/examples/.config_18ev200_zftlab_rotek
+        wget https://raw.githubusercontent.com/SSharshunov/chaos_calmer/f086093622497d48cd9d7635564927af183d82db/ker_config_ser_01 -O ${REPOSITORY}/target/linux/hi35xx/config-${{ matrix.chip.kernel }}
         sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=${{ matrix.chip.kernel }}/" ${REPOSITORY}/target/linux/hi35xx/Makefile
         echo "::set-output name=status::success"
         
