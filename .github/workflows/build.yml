@@ -105,14 +105,14 @@ jobs:
       if: steps.compile.outputs.status == 'success'
       with:
         name: ${{ matrix.chip.artifact }}
-        path: ${PWD}/chaos_calmer/bin/
+        path: chaos_calmer/bin/
 
     - name: Create GitHub release with artifacts
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          ${PWD}/chaos_calmer/bin/
+          chaos_calmer/bin/
         name: "Build ${GITHUB_SHA}"
 
     # Runs a set of commands using the runners shell
