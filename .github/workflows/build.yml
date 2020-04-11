@@ -46,6 +46,13 @@ jobs:
     - name: Create dl folder
       run: mkdir ${PWD}/dl
       
+    - name: Cache DL
+      id: cache-dl
+      uses: actions/cache@v1
+      with:
+        path: ${PWD}/dl
+        key: chaos_calmer_dl
+      
     - name: Login to docker registry
       id: login_reg
       run: |
@@ -70,9 +77,16 @@ jobs:
         sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=${{ matrix.chip.kernel }}/" ${REPOSITORY}/target/linux/hi35xx/Makefile
         echo "::set-output name=status::success"
         
+    - name: Download packages
+      id: download_packages
+      run: |
+        docker run -v ${PWD}/dl:${IN_DOCKER_ROOT_FOLDER}/dl -v ${PWD}/${REPOSITORY}:${IN_DOCKER_ROOT_FOLDER}/ --rm -i ${DOCKER_IMAGE_ORIGIN}:${DOCKER_IMAGE_VERSION} \
+          bash -c "cd ${IN_DOCKER_ROOT_FOLDER} && time make download"
+        echo "::set-output name=status::success"
+            
     - name: Build
       id: compile
-#       if: steps.compile.download_packages.status == 'success'
+      if: steps.compile.download_packages.status == 'success'
       run: |
         docker run -v ${PWD}/dl:${IN_DOCKER_ROOT_FOLDER}/dl -v ${PWD}/${REPOSITORY}:${IN_DOCKER_ROOT_FOLDER}/ --rm -i ${DOCKER_IMAGE_ORIGIN}:${DOCKER_IMAGE_VERSION} \
           bash -c "ls -la ${IN_DOCKER_ROOT_FOLDER}/dl && cd ${IN_DOCKER_ROOT_FOLDER} && cp target/linux/hi35xx/examples/.config_18ev200_zftlab_rotek ./.config && ./scripts/feeds update glutinium openipc && time make V=s -j$(nproc) "
@@ -83,18 +97,20 @@ jobs:
       if: steps.compile.outputs.status == 'success'
       with:
         name: ${{ matrix.chip.artifact }}
-        path: chaos_calmer/bin/*
+        path: ${PWD}/chaos_calmer/bin/
 
     - name: Create GitHub release with artifacts
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          chaos_calmer/bin/*
+          ${PWD}/chaos_calmer/bin/
         name: "Build ${GITHUB_SHA}"
 
     # Runs a set of commands using the runners shell
     - name: Run a multi-line script
       run: |
-        echo Add other actions to build,
+        ls ${PWD}
+        ls ${PWD}/chaos_calmer/bin/
+        ls ${PWD}/chaos_calmer/bin/hi25xx/
         echo test, and deploy your project.
