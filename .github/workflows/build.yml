@@ -77,7 +77,15 @@ jobs:
         sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=${{ matrix.chip.kernel }}/" ${REPOSITORY}/target/linux/hi35xx/Makefile
         echo "::set-output name=status::success"
         
-    - name: Download packages
+    - name: Config
+      id: config
+      run: |
+        run: |
+        docker run -v ${PWD}/dl:${IN_DOCKER_ROOT_FOLDER}/dl -v ${PWD}/${REPOSITORY}:${IN_DOCKER_ROOT_FOLDER}/ --rm -i ${DOCKER_IMAGE_ORIGIN}:${DOCKER_IMAGE_VERSION} \
+          bash -c "ls -la ${IN_DOCKER_ROOT_FOLDER}/dl && cd ${IN_DOCKER_ROOT_FOLDER} && cp target/linux/hi35xx/examples/.config_18ev200_zftlab_rotek ./.config && ./scripts/feeds update glutinium openipc"
+        echo "::set-output name=status::success"
+        
+    - name: Download pack
       id: download_packages
       run: |
         docker run -v ${PWD}/dl:${IN_DOCKER_ROOT_FOLDER}/dl -v ${PWD}/${REPOSITORY}:${IN_DOCKER_ROOT_FOLDER}/ --rm -i ${DOCKER_IMAGE_ORIGIN}:${DOCKER_IMAGE_VERSION} \
@@ -89,7 +97,7 @@ jobs:
       if: steps.compile.download_packages.status == 'success'
       run: |
         docker run -v ${PWD}/dl:${IN_DOCKER_ROOT_FOLDER}/dl -v ${PWD}/${REPOSITORY}:${IN_DOCKER_ROOT_FOLDER}/ --rm -i ${DOCKER_IMAGE_ORIGIN}:${DOCKER_IMAGE_VERSION} \
-          bash -c "ls -la ${IN_DOCKER_ROOT_FOLDER}/dl && cd ${IN_DOCKER_ROOT_FOLDER} && cp target/linux/hi35xx/examples/.config_18ev200_zftlab_rotek ./.config && ./scripts/feeds update glutinium openipc && time make V=s -j$(nproc) "
+          bash -c "ls -la ${IN_DOCKER_ROOT_FOLDER}/dl && cd ${IN_DOCKER_ROOT_FOLDER} && time make V=s -j$(nproc) "
         echo "::set-output name=status::success"
           
     - name: Upload bin directory
