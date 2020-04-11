@@ -94,7 +94,7 @@ jobs:
             
     - name: Build
       id: compile
-      if: steps.compile.download_packages.status == 'success'
+#       if: steps.compile.download_packages.status == 'success'
       run: |
         docker run -v ${PWD}/dl:${IN_DOCKER_ROOT_FOLDER}/dl -v ${PWD}/${REPOSITORY}:${IN_DOCKER_ROOT_FOLDER}/ --rm -i ${DOCKER_IMAGE_ORIGIN}:${DOCKER_IMAGE_VERSION} \
           bash -c "ls -la ${IN_DOCKER_ROOT_FOLDER}/dl && cd ${IN_DOCKER_ROOT_FOLDER} && time make V=s -j$(nproc) "
