@@ -114,11 +114,3 @@ jobs:
         files: |
           chaos_calmer/bin/
         name: "Build ${GITHUB_SHA}"
-
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
-      run: |
-        ls ${PWD}
-        ls ${PWD}/chaos_calmer/bin/
-        ls ${PWD}/chaos_calmer/bin/hi25xx/
-        echo test, and deploy your project.
